@@ -553,4 +553,20 @@ M             1000
         set.addAll(prev);
         return set.size();
     }
+    public List<Boolean> canMakePaliQueries(String s, int[][] queries) {
+        int[] dp = new int[s.length()];
+        dp[0] = 1<<(s.charAt('0')-'a');
+        for(int i=1;i<s.length();i++){
+            dp[i] = dp[i-1] ^ (1<<((s.charAt(i)-'a')));
+        }
+        List<Boolean> ret = new ArrayList<>();
+        for(int[] e:queries){
+            int start = e[0]>0?dp[e[0]-1]:0;
+            int end = dp[e[1]];
+            int count = start ^ end;
+            int bitCount = Integer.bitCount(count);
+            ret.add(bitCount / 2<=e[3]);
+        }
+        return ret;
+    }
 }
