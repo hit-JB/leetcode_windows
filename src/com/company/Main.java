@@ -444,4 +444,113 @@ M             1000
         }
         map.put(code,false);
     }
+    public int minCostTickets(int[] days, int[] costs) {
+        int[] dp = new int[days.length+1];
+        int min_cost = Math.min(costs[0],Math.min(costs[1],costs[2]));
+        for(int i=1;i<dp.length;i++){
+            int min = dp[i-1] +min_cost;
+            for(int k=i-1;k>0 && days[i-1]- days[k-1]<30;k--){
+                if(days[i-1]-days[k-1]<7){
+                    min = Math.min(dp[k-1]+costs[1],min);
+                }
+                min = Math.min(dp[k-1] +costs[2],min);
+            }
+            dp[i] = min;
+        }
+        return dp[dp.length-1];
+    }
+    public int numberOfBoomerangs(int[][] points) {
+        Map<Integer,Integer>[] dist = new Map[points.length];
+        for(int i=0;i<dist.length;i++)
+            dist[i] = new HashMap<>();
+        int sum = 0;
+        for(int i=0;i<points.length;i++){
+            for(int j=0;j<points.length;j++){
+                if(j==i)
+                    continue;
+                int d = (int) (Math.pow(points[i][0]-points[j][0],2) + Math.pow(points[i][1] - points[j][1],2));
+                dist[i].put(d,dist[i].getOrDefault(d,0)+1);
+            }
+        }
+        for(int i=0;i<points.length;i++){
+            for(int j=0;j<points.length;j++){
+                if(i==j)
+                    continue;
+                int d = (int) (Math.pow(points[i][0]-points[j][0],2) + Math.pow(points[i][1] - points[j][1],2));
+                sum += (dist[j].getOrDefault(d,0)-1);
+            }
+        }
+        return sum;
+    }
+    public int longestStrChain(String[] words) {
+        List<String> list = new ArrayList<>(Arrays.asList(words));
+        list.sort(Comparator.comparingInt(String::length));
+        int[] dp = new int[words.length];
+        dp[0] = 1;
+        for(int i=1;i<dp.length;i++){
+            dp[i] = 1;
+            for(int j=i-1;j>=0 && list.get(j).length()>=list.get(i).length()-1;j--){
+                if(list.get(j).length()==list.get(i).length())
+                    continue;
+                int k=0;
+                String str1 = list.get(i);
+                String str2 = list.get(j);
+                while(k<str2.length() && str1.charAt(k)==str2.charAt(k)){
+                    k++;
+                }
+                if(k==str2.length() || str1.substring(k+1).equals(str2.substring(k)))
+                    dp[i] = Math.max(dp[j] +1,dp[i]);
+            }
+        }
+        int max = 0;
+        for(int e:dp){
+            max = Math.max(e,max);
+        }
+        return max;
+    }
+    public String findLongestWord(String s, List<String> dictionary) {
+        dictionary.sort(Comparator.comparingInt(String::length));
+        String ret ="";
+        for(String e:dictionary){
+            if(e.length()>s.length())
+                break;
+            if(checkSubSubs(s,e)){
+                if(e.length()>ret.length())
+                    ret = e;
+                else if(e.length()==ret.length()){
+                    if(e.compareTo(ret)>0)
+                        ret = e;
+                }
+            }
+        }
+        return ret;
+    }
+    public boolean checkSubSubs(String s1,String s2){
+        int k1=0,k2=0;
+        while(k1<s1.length() && k2<s2.length()){
+            if(s1.charAt(k1)==s2.charAt(k2)){
+                k2++;
+                k1++;
+            }else{
+                k1++;
+            }
+        }
+        return k2 == s2.length();
+    }
+    public int subarrayBitwiseORs(int[] arr) {
+        List<Integer> prev = new LinkedList<>();
+        Set<Integer> set = new HashSet<>();
+        for (int j : arr) {
+            List<Integer> temp = new LinkedList<>();
+            for (int e : prev) {
+                temp.add(e | j);
+                set.add(e);
+            }
+            temp.add(j);
+            prev.clear();
+            prev.addAll(temp);
+        }
+        set.addAll(prev);
+        return set.size();
+    }
 }
